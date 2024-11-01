@@ -79,6 +79,66 @@ layout:decorate="~{layout/defaultLayout}">
 					}
 				});
 			});
+			
+			$("#signUpForm").on("submit", function(e) {
+				e.preventDefault(); // submit 중단 (화면 이동 x)
+				
+				let loginId = $("#loginId").val().trim();
+				let password = $("#password").val();
+				let confirmPassword = $("#confirmPassword").val();
+				let name = $("#name").val().trim();
+				let email = $("#email").val().trim();
+				
+				if (!loginId) {
+					alert("아이디를 입력하세요.");
+					return false; // submit일 때는 false
+				}
+				
+				if (!password || !confirmPassword) {
+					alert("비밀번호를 입력하세요.");
+					return false;
+				}
+				
+				if (password != confirmPassword) {
+					alert("비밀번호가 일치하지 않습니다.");
+					return false;
+				}
+				
+				if (!name) {
+					alert("이름을 입력하세요.");
+					return false;
+				}
+				
+				if (!email) {
+					alert("이메일을 입력하세요.");
+					return false;
+				}
+				
+				if ($("#idCheckOk").hasClass("d-none")) {
+					alert("아이디 중복확인을 해주세요.");
+					return false;
+				}
+				
+				//$(this)[0].submit(); // 몇번째 form인가 쇼핑몰 주문넘어갈때 파라미터 많을 때
+				
+				let url = $(this).attr("action");
+	
+				let params = $(this).serialize(); // 폼태그의 name속성과 value를 직렬화 => request 파라미터로 구성
+		
+				
+				$.post(url, params) // request
+				.done(function(data) { // response - callback
+					if (data.code == 200) {
+						// 성공
+						alert("가입을 환영합니다. 로그인 해주세요.");
+						location.href = "/user/sign-in-view";
+					} else {
+						// 로직 상 실패
+						alert(data.error_message);
+					}
+				});
+				//$.post("", {"":});
+			});
 		});
 	</script>
 </th:block>

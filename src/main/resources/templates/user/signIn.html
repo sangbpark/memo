@@ -31,6 +31,36 @@
 
 <th:block layout:fragment="script">
     <script>
-
+		$(document).ready(function() {
+			$("#loginForm").on("submit", function(e) {
+				e.preventDefault();
+				let loginId = $("#loginId").val().trim();
+				let password = $("#password").val();
+				
+				if (loginId.length < 4) {
+					alert("아이디를 입력하세요.");
+					return false;
+				}
+				
+				if (!password) {
+					alert("비밀번호를 입력하세요.");
+					return false;
+				}
+				
+				let url = $(this).attr("action");
+		
+				let params = $(this).serialize(); // name 속성 필수
+				
+				
+				$.post(url, params)
+				.done(function(data) {
+					if (data.code == 200) {
+						location.href = "/post/post-list-view";
+					} else {
+						alert(data.error_message);
+					}
+				});
+			});
+		});
     </script>
 </th:block>
