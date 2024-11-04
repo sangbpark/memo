@@ -3,10 +3,19 @@
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
  
  <mapper namespace="com.memo.post.mapper.PostMapper">
- 	<select id="selectPostList" resultType="map">
+ 	<select id="selectPostListByUserId" parameterType="int"
+ 			resultType="com.memo.post.domain.Post">
  		SELECT
- 			*
- 		FROM
- 			`post`
+	 		`id`
+			,`userId`
+			,`subject`
+			,`content`
+			,`imagePath`
+			,`createdAt`
+			,`updatedAt`
+		FROM
+			`post`
+		WHERE
+			`userId` = #{userId}
  	</select>
  </mapper>
