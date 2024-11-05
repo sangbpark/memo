@@ -31,4 +31,13 @@ public class PostController {
 		model.addAttribute("postList", postList);
 		return "post/postList";
 	}
+	
+	/**
+	 * 글쓰기 화면
+	 * @return
+	 */
+	@GetMapping("/post-create-view")
+	public String postCreteView() {
+		return "post/postCreate";
+	}
 }
