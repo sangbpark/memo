@@ -16,21 +16,22 @@ public class PostBO {
 	private PostMapper postMapper;
 	
 	@Autowired
-	private FileManagerService fileManagerService;
+	private FileManagerService fileManager;
 	
 	public List<Post> getPostListByUserId(int userId) {
 		return postMapper.selectPostListByUserId(userId);
-	};
+	}
 	
 	public boolean addPost(int userId, String subject, String userLoginId, String content, MultipartFile file) {
-		String imagePath = null;
-		if (file != null) {
-			imagePath = fileManagerService.uploadFile(file, userLoginId);
+		String imagePath = fileManager.uploadFile(file, userLoginId);
+		if (postMapper.insertPost(userId, subject, content, imagePath) > 0) {
+			return true;
 		}
-//		if (postMapper.insertPost(userId, subject, content, imagePath) > 0) {
-//			return true;
-//		}
 		return false;
 	}
+	
+	public Post getPostByPostIdAndUserId(int postId, int userId) {
+		return postMapper.selectPostByPostIdAndUserId(postId, userId);
+	};
 	
 }

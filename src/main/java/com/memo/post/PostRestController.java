@@ -22,7 +22,7 @@ public class PostRestController {
 
 	@PostMapping("/create")
 	public Map<String, Object> create(
-			@RequestParam("subject") String suject,
+			@RequestParam("subject") String subject,
 			@RequestParam("content") String content,
 			@RequestParam(value= "file", required = false) MultipartFile file,
 			HttpSession session
@@ -31,7 +31,7 @@ public class PostRestController {
 		
 		
 		boolean isSuccess = postBO.addPost((int)session.getAttribute("userId")
-				, (String)session.getAttribute("userLoginId"), suject, content, file);
+				, subject, (String)session.getAttribute("userLoginId"), content, file);
 		Map<String, Object> result = new HashMap<>();
 		if (isSuccess) {
 			result.put("code", 200);
