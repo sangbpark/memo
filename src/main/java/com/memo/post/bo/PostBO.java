@@ -1,5 +1,6 @@
 package com.memo.post.bo;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,35 @@ public class PostBO {
 	@Autowired
 	private FileManagerService fileManager;
 	
-	public List<Post> getPostListByUserId(int userId) {
-		return postMapper.selectPostListByUserId(userId);
+	// 페이징 정보 필드(limit)
+	private static final int POST_MAX_SIZE = 3;
+	
+	public List<Post> getPostListByUserId(int userId, Integer prevId, Integer nextId) {
+		// 게시글 번호: 10 9 8 | 7 6 5 | 4 3 2 | 1
+		// 만약 4 3 2 페이지
+		// 1) 다음(nextId가 있음): 2보다 작은 3개 가져오기 desc
+		// 2) 이전(prevId가 있음): 4보다 큰 3개 asc => 5 6 7 => list reverse
+		// 3) 페이징 없음(next, prevId 모두 없음): 최신순 3개 desc
+		
+		// xml에서 하나의 쿼리로 만들기 위해 변수를 정제해본다.
+		
+		Integer standardId = null; // 기준 id(prev or next)
+		String direction = null; // 방향
+		
+		if (prevId != null) {
+			standardId = prevId;
+			direction = "prev";
+			// 예)  5 6 7
+			List<Post> postList = postMapper.selectPostListByUserId(userId, standardId, direction, POST_MAX_SIZE);
+			Collections.reverse(postList);
+			return postList;
+		} else if (nextId != null) {
+			standardId = nextId;
+			direction = "next";
+		} 
+		
+		// 3) 페이징 없음 or 1) 다음
+		return postMapper.selectPostListByUserId(userId, standardId, direction, POST_MAX_SIZE);
 	}
 	
 	public boolean addPost(int userId, String subject, String userLoginId, String content, MultipartFile file) {
@@ -72,6 +100,16 @@ public class PostBO {
 		if (rowCount > 0 && post.getImagePath() != null){
 			fileManager.deleteFile(post.getImagePath());
 		}
+	}
+	
+	public boolean isPrevLastPageByUserId(int userId, int prevId) {
+		int maxPostId = postMapper.selectIdByUserIdAsSort(userId, "desc");
+		return maxPostId == prevId;
+	}
+	
+	public boolean isNextLastPageByUserId(int userId, int nextId) {
+		int maxPostId = postMapper.selectIdByUserIdAsSort(userId, "asc");
+		return maxPostId == nextId;
 	}
 	
 }

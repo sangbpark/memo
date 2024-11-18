@@ -3,7 +3,7 @@
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
  
  <mapper namespace="com.memo.post.mapper.PostMapper">
- 	<select id="selectPostListByUserId" parameterType="int"
+ 	<select id="selectPostListByUserId" parameterType="map"
  			resultType="com.memo.post.domain.Post">
  		SELECT
 	 		`id`
@@ -17,8 +17,24 @@
 			`post`
 		WHERE
 			`userId` = #{userId}
- 	</select>
- 	
+			<if test="direction == 'next'">
+			<![CDATA[
+			AND `id` < #{standardId} 
+			]]>
+			ORDER BY `id` DESC 
+			</if>
+			<if test="direction == 'prev'">
+			<![CDATA[
+			AND `id` > #{standardId}
+			]]>
+			ORDER BY `id` ASC
+			</if>
+			<if test="direction == null">
+			ORDER BY `id` DESC 
+			</if>
+		LIMIT ${limit}		
+  	</select>
+ 	<!-- 예전 버전 '' 안 쓰기 위해서 ${} -->
  	<insert id="insertPost"
  			parameterType="map">
  		INSERT INTO `post`
@@ -83,4 +99,15 @@
  		WHERE
  			id = #{postId}
  	</delete>
+ 	
+ 	<select id="selectIdByUserIdAsSort" parameterType="map" resultType="int">
+ 		SELECT
+ 			`id`
+ 		FROM
+ 			`post`
+ 		WHERE
+ 			`userId` = #{userId}
+ 		ORDER BY `id` ${sort}
+ 		Limit 1
+ 	</select>
  </mapper>

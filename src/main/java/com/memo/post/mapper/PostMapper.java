@@ -9,7 +9,11 @@ import com.memo.post.domain.Post;
 
 @Mapper
 public interface PostMapper {
-	public List<Post> selectPostListByUserId(int userId);
+	public List<Post> selectPostListByUserId(
+			@Param("userId") int userId,
+			@Param("standardId") Integer standardId,
+			@Param("direction") String direction,
+			@Param("limit") int limit);
 	
 	public int insertPost(
 			@Param("userId") int userId, 
@@ -28,4 +32,8 @@ public interface PostMapper {
 			@Param("imagePath") String imagePath);
 	
 	public int deletePostByPostId (int postId);
+	
+	public int selectIdByUserIdAsSort(
+			@Param("userId") int userId,
+			@Param("sort") String sort);
 }
